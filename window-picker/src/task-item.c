@@ -375,18 +375,18 @@ static gboolean task_item_draw (
     return FALSE;
 }
 
-static void on_size_allocate (
-    GtkWidget     *widget,
-    GtkAllocation *allocation,
-    TaskItem      *item)
+static void
+on_size_allocate (GtkWidget     *widget,
+                  GtkAllocation *allocation,
+                  TaskItem      *item)
 {
     g_return_if_fail (TASK_IS_ITEM (item));
-    if (allocation->width != allocation->height + 6)
-        gtk_widget_set_size_request (widget, allocation->height + 6, -1);
+
     item->area.x = allocation->x;
     item->area.y = allocation->y;
     item->area.width = allocation->width;
     item->area.height = allocation->height;
+
     update_hints (item);
 }
 
@@ -948,10 +948,14 @@ static void task_item_init (TaskItem *item) {
     item->blink_timer = 0;
 }
 
-GtkWidget *task_item_new (WpApplet* windowPickerApplet, WnckWindow *window) {
+GtkWidget *
+task_item_new (WpApplet   *windowPickerApplet,
+               WnckWindow *window)
+{
     TaskItem *taskItem;
     WnckScreen *screen;
     GtkWidget *item;
+    GtkAllocation allocation;
 
     g_return_val_if_fail (WNCK_IS_WINDOW (window), NULL);
 
@@ -963,6 +967,10 @@ GtkWidget *task_item_new (WpApplet* windowPickerApplet, WnckWindow *window) {
         NULL
     );
     gtk_widget_set_vexpand(item, TRUE);
+
+    gtk_widget_get_allocation (GTK_WIDGET (windowPickerApplet), &allocation);
+    gtk_widget_set_size_request (item, allocation.height + 6, -1);
+
     gtk_widget_add_events (item, GDK_ALL_EVENTS_MASK);
     gtk_container_set_border_width (GTK_CONTAINER (item), 0);
     taskItem = TASK_ITEM (item);
