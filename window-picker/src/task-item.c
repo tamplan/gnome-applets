@@ -183,14 +183,20 @@ task_item_set_visibility (TaskItem *item)
     }
 }
 
+static GtkSizeRequestMode
+task_item_get_request_mode (GtkWidget *widget)
+{
+    return GTK_SIZE_REQUEST_WIDTH_FOR_HEIGHT;
+}
+
 static void
 task_item_get_preferred_width (GtkWidget *widget,
                                gint      *minimal_width,
                                gint      *natural_width)
 {
-    GtkRequisition requisition;
-    requisition.width = DEFAULT_TASK_ITEM_WIDTH;
-    *minimal_width = *natural_width = requisition.width;
+    *minimal_width = *natural_width = DEFAULT_TASK_ITEM_WIDTH;
+
+    g_debug ("Preferred width: %d", DEFAULT_TASK_ITEM_WIDTH);
 }
 
 static void
@@ -198,9 +204,31 @@ task_item_get_preferred_height (GtkWidget *widget,
                                 gint      *minimal_height,
                                 gint      *natural_height)
 {
-    GtkRequisition requisition;
-    requisition.height = DEFAULT_TASK_ITEM_HEIGHT;
-    *minimal_height = *natural_height = requisition.height;
+    *minimal_height = *natural_height = DEFAULT_TASK_ITEM_HEIGHT;
+
+    g_debug ("Preferred height: %d", DEFAULT_TASK_ITEM_HEIGHT);
+}
+
+static void
+task_item_get_preferred_width_for_height (GtkWidget *widget,
+                                          gint height,
+                                          gint *minimum_width,
+                                          gint *natural_width)
+{
+    *minimum_width = *natural_width = height + 6;
+
+    g_debug ("Preferred width for height: %d", height + 6);
+}
+
+static void
+task_item_get_preferred_height_for_width (GtkWidget *widget,
+                                          gint width,
+                                          gint *minimum_height,
+                                          gint *natural_height)
+{
+    *minimum_height = *natural_height = width + 6;
+
+    g_debug ("Preferred height for width: %d", width + 6);
 }
 
 static GdkPixbuf *
@@ -929,8 +957,12 @@ static void task_item_class_init (TaskItemClass *klass) {
 
     obj_class->finalize = task_item_finalize;
 
+    widget_class->get_request_mode = task_item_get_request_mode;
     widget_class->get_preferred_width = task_item_get_preferred_width;
     widget_class->get_preferred_height = task_item_get_preferred_height;
+    widget_class->get_preferred_width_for_height = task_item_get_preferred_width_for_height;
+    widget_class->get_preferred_height_for_width = task_item_get_preferred_height_for_width;
+
     task_item_signals [TASK_ITEM_CLOSED_SIGNAL] =
     g_signal_new ("task-item-closed",
         G_TYPE_FROM_CLASS (klass),
@@ -967,9 +999,6 @@ task_item_new (WpApplet   *windowPickerApplet,
         NULL
     );
     gtk_widget_set_vexpand(item, TRUE);
-
-    gtk_widget_get_allocation (GTK_WIDGET (windowPickerApplet), &allocation);
-    gtk_widget_set_size_request (item, allocation.height + 6, -1);
 
     gtk_widget_add_events (item, GDK_ALL_EVENTS_MASK);
     gtk_container_set_border_width (GTK_CONTAINER (item), 0);
