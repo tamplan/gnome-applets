@@ -1,5 +1,10 @@
 <schemalist gettext-domain="@GETTEXT_PACKAGE@">
 	<schema id="org.gnome.gnome-applets.stickynotes">
+		<key name="filename" type="s">
+			<default>""</default>
+			<summary></summary>
+			<description></description>
+		</key>
 		<key name="default-width" type="i">
 			<default>100</default>
 			<summary>Default width for new notes</summary>
