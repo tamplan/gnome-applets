@@ -1405,7 +1405,6 @@ stickynotes_load (StickyNotesApplet *applet)
 	xmlNodePtr node;
 
 	GList *new_notes, *tmp1;  /* Lists of StickyNote*'s */
-	GList *new_nodes; /* Lists of xmlNodePtr's */
 	int x, y, w, h;
 
   notes_file = get_notes_file (applet);
@@ -1435,7 +1434,7 @@ stickynotes_load (StickyNotesApplet *applet)
 
 	/* For all children of the root node (ie all sticky notes) */
 	new_notes = NULL;
-	new_nodes = NULL;
+
 	while (node) {
 		if (!xmlStrcmp(node->name, (const xmlChar *) "note"))
 		{
@@ -1484,7 +1483,6 @@ stickynotes_load (StickyNotesApplet *applet)
 			note = stickynote_new_aux (applet, x, y, w, h);
 			applet->notes = g_list_append (applet->notes, note);
 			new_notes = g_list_append (new_notes, note);
-			new_nodes = g_list_append (new_nodes, node);
 
 			/* Retrieve and set title of the note */
 			{
@@ -1576,7 +1574,6 @@ stickynotes_load (StickyNotesApplet *applet)
 	}
 
 	g_list_free (new_notes);
-	g_list_free (new_nodes);
 
 	xmlFreeDoc(doc);
 }
